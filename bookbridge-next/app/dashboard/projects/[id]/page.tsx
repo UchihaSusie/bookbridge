@@ -45,6 +45,14 @@ export default async function ProjectPage({
             {project.sourceLang} &rarr; {project.targetLang} &middot;{' '}
             {project.chapters.length} chapters
           </p>
+          {project.chapters.length > 0 && (
+            <Link
+              href={`/read/${id}`}
+              className="mt-3 inline-block rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+            >
+              Start Reading
+            </Link>
+          )}
         </div>
         <div className="flex gap-2">
           <Link
@@ -54,14 +62,6 @@ export default async function ProjectPage({
             <BookOpen className="mr-1 inline h-4 w-4" />
             Glossary ({project.glossary.length})
           </Link>
-          {project.chapters.length > 0 && (
-            <Link
-              href={`/read/${id}`}
-              className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
-            >
-              Start Reading
-            </Link>
-          )}
           <DeleteProjectButton projectId={project.id} />
         </div>
       </div>
