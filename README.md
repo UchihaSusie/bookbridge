@@ -20,6 +20,7 @@ https://youtu.be/Dwah3sysQh4
 
 ### Individual reflections (500 words per partner)
 docs/reflections/ash.md — 500 words (Ash / Zhanyi Chen)
+
 docs/reflections/shuai-ren.md — 500 words (Shuai Ren)
 
 Evidence bundles referenced from the report:
