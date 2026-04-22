@@ -1,4 +1,4 @@
-# Individual Reflection — Shuai Ren
+# Individual Reflection Shuai Ren
 
 The biggest lesson I learned from this project is that good design does not come all at once. It comes from trying things, finding problems, and then improving. When we first started BookBridge, my idea was simple. We would just take the whole PDF and translate everything from start to finish. But very quickly I realized this does not work well. The translated paragraphs had no connection to each other. Names and important words kept changing between chapters, and the result felt broken and hard to read.
 
