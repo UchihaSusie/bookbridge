@@ -423,31 +423,10 @@ What the README provides:
 
 Published on Substack: [BookBridge: An AI-Powered Book Translation Platform That Actually Understands Structure](https://attonbitusclamo202566.substack.com/p/bookbridge-an-ai-powered-book-translation?r=5lm4yb&utm_campaign=post&utm_medium=web&triedRedirect=true)
 
-The post covers the Claude Code workflow used to ship BookBridge — **custom skills** (`tdd-add-module` v1 → v2 iteration, `/start-issue`, `/create-pr`), **hooks** (`PreToolUse` TDD enforcement, `PostToolUse` ruff format, `Stop` pytest gate), **MCP** (custom glossary server + Playwright MCP for UI verification), and **sub-agents** (`code-reviewer`, `security-reviewer`, `test-writer`). Quantified insight: 15+ TDD red-green pairs in 2 sprints with Vitest 86.9% / pytest 77% coverage, and AI-authored C.L.E.A.R. reviews as the de-facto PR review record.
-
 ### 6.3 Video demo (5–10 min)
-
-> **🚧 Placeholder — URL to be inserted before final submission.**
->
-> Target: `https://youtube.com/watch?v=<id>` (YouTube / unlisted) or Loom / Google Drive equivalent.
->
-> Planned coverage:
-> 1. **App walkthrough** — upload a PDF, watch chapter extraction, trigger per-chapter translation, see the bilingual two-column reader, publish via public link, open the public reader in a guest browser
-> 2. **Claude Code workflow** — `/start-issue <N>` invoking the `test-writer` sub-agent to produce the `test(red):` commit, followed by implementation and `/create-pr` invoking the `code-reviewer` sub-agent
-> 3. **Playwright MCP live** — reproduce the archived session (§2.4) of moving a UI element and verifying the layout in a Clerk-authenticated browser
-> 4. **GitHub Actions pipeline** — show the CI run going green across lint / typecheck / tests / E2E / security / AI review (§4.1)
+https://youtu.be/Dwah3sysQh4
 
 ### 6.4 Individual reflections (500 words per partner)
-
-> **🚧 Placeholders — to be drafted before final submission:**
->
 > - [`docs/reflections/ash.md`](reflections/ash.md) — 500 words (Ash / Zhanyi Chen)
 > - [`docs/reflections/shuai-ren.md`](reflections/shuai-ren.md) — 500 words (Shuai Ren)
 >
-> Each reflection should include: (a) the strongest Claude Code lesson from this project; (b) one thing that worked better than expected; (c) one thing that didn't; (d) what the author would do differently next time. Specific Claude Code insights expected — skill iteration, hook friction, MCP ergonomics, sub-agent boundaries.
-
-### 6.5 Showcase submission
-
-> **🚧 Placeholder** — Google Form submission confirmation screenshot at `docs/evidence/showcase/submission.png`, to be added immediately after the form is submitted per Deliverable #7 of the rubric.
-
----
