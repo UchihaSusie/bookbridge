@@ -19,9 +19,9 @@ Published on Substack: BookBridge: An AI-Powered Book Translation Platform That 
 https://youtu.be/Dwah3sysQh4
 
 ### Individual reflections (500 words per partner)
-docs/reflections/ash.md — 500 words (Ash / Zhanyi Chen)
+[`Zhanyi Chen`](docs/reflections/ash.md) — Zhanyi Chen
 
-docs/reflections/shuai-ren.md — 500 words (Shuai Ren)
+[`Shuai Ren`](docs/reflections/shuai-ren.md) — Shuai Ren
 
 Evidence bundles referenced from the report:
 
