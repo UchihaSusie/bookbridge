@@ -2,8 +2,8 @@
 
 **AI-powered long-document translation web platform.** Upload a PDF, select chapters to translate, and read the results in an immersive two-column bilingual view. Terminology stays consistent across the entire book via a project-scoped glossary.
 
-**Live:** <https://bookbridge-next.vercel.app/>
-**Worker:** <https://passionate-serenity-production-3cdd.up.railway.app/>
+**Live:** <https://bookbridge-henna.vercel.app/>
+**Worker:** <https://bookbridge-production-33aa.up.railway.app/>
 
 ---
 
