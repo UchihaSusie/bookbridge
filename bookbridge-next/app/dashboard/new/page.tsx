@@ -12,6 +12,8 @@ export default function NewProjectPage() {
   const [targetLang, setTargetLang] = useState('zh-Hans')
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [chapterMode, setChapterMode] = useState<'auto' | 'manual'>('auto')
+  const [chapterCount, setChapterCount] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -24,11 +26,22 @@ export default function NewProjectPage() {
       formData.append('file', file)
       formData.append('title', title || file.name.replace(/\.pdf$/i, ''))
       formData.append('targetLang', targetLang)
+      if (chapterMode === 'manual' && chapterCount) {
+        formData.append('chapterCount', chapterCount)
+      }
 
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
 
-      if (!res.ok) throw new Error(data.error || 'Upload failed')
+      let data: Record<string, unknown> = {}
+      try {
+        data = await res.json()
+      } catch {
+        throw new Error(
+          'Processing timed out — the PDF may be too large. Try a file under 200 pages, or split the PDF first.'
+        )
+      }
+
+      if (!res.ok) throw new Error((data.error as string) || 'Upload failed')
       router.push(`/dashboard/projects/${data.projectId}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -102,6 +115,54 @@ export default function NewProjectPage() {
               />
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-ink">Chapter Detection</label>
+          <div className="mt-1 flex rounded-lg border border-parchment overflow-hidden text-sm">
+            <button
+              type="button"
+              onClick={() => setChapterMode('auto')}
+              className={`flex-1 px-4 py-2 font-medium transition-colors ${
+                chapterMode === 'auto'
+                  ? 'bg-accent text-white'
+                  : 'bg-white text-ink-light hover:bg-parchment/30'
+              }`}
+            >
+              Auto-detect
+            </button>
+            <button
+              type="button"
+              onClick={() => setChapterMode('manual')}
+              className={`flex-1 px-4 py-2 font-medium transition-colors ${
+                chapterMode === 'manual'
+                  ? 'bg-accent text-white'
+                  : 'bg-white text-ink-light hover:bg-parchment/30'
+              }`}
+            >
+              Manual
+            </button>
+          </div>
+          {chapterMode === 'auto' && (
+            <p className="mt-1.5 text-xs text-ink-muted">
+              Detects chapters, parts, roman numerals, and common foreign headings automatically.
+            </p>
+          )}
+          {chapterMode === 'manual' && (
+            <div className="mt-2">
+              <input
+                type="number"
+                min={1}
+                value={chapterCount}
+                onChange={(e) => setChapterCount(e.target.value)}
+                placeholder="How many chapters?"
+                className="w-full rounded-lg border border-parchment px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+              <p className="mt-1.5 text-xs text-ink-muted">
+                Pages will be divided evenly. Use this when auto-detect gets it wrong.
+              </p>
+            </div>
+          )}
         </div>
 
         {error && (

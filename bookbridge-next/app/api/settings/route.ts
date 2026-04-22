@@ -17,27 +17,16 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { clerkId: userId },
-    select: {
-      apiProvider: true,
-      apiBaseUrl: true,
-      freeCharsUsed: true,
-      apiKey: true,
-    },
+    select: { apiProvider: true, apiBaseUrl: true, apiKey: true },
   })
 
   if (!user) {
-    return NextResponse.json({
-      apiProvider: 'openai',
-      apiBaseUrl: null,
-      freeCharsUsed: 0,
-      hasApiKey: false,
-    })
+    return NextResponse.json({ apiProvider: 'openai', apiBaseUrl: null, hasApiKey: false })
   }
 
   return NextResponse.json({
     apiProvider: user.apiProvider,
     apiBaseUrl: user.apiBaseUrl,
-    freeCharsUsed: user.freeCharsUsed,
     hasApiKey: !!user.apiKey,
   })
 }
@@ -73,18 +62,12 @@ export async function PATCH(req: NextRequest) {
       email: `${userId}@placeholder.local`,
       ...data,
     },
-    select: {
-      apiProvider: true,
-      apiBaseUrl: true,
-      freeCharsUsed: true,
-      apiKey: true,
-    },
+    select: { apiProvider: true, apiBaseUrl: true, apiKey: true },
   })
 
   return NextResponse.json({
     apiProvider: user.apiProvider,
     apiBaseUrl: user.apiBaseUrl,
-    freeCharsUsed: user.freeCharsUsed,
     hasApiKey: !!user.apiKey,
   })
 }

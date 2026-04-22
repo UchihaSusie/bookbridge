@@ -164,6 +164,29 @@ class OpenAICompatTranslator(Translator):
         try:
             parsed = json.loads(stripped)
         except json.JSONDecodeError:
+            # The LLM sometimes uses unescaped ASCII " as speech marks inside
+            # the translated text, which breaks JSON. Try a lenient extraction
+            # before giving up and storing the raw JSON blob.
+            import re as _re
+
+            lenient = _re.search(
+                r'"text"\s*:\s*"([\s\S]*?)(?:"\s*,\s*"new_terms"|"\s*\})',
+                stripped,
+            )
+            if lenient:
+                extracted = (
+                    lenient.group(1)
+                    .replace("\\n", "\n")
+                    .replace("\\t", "\t")
+                    .replace('\\"', '"')
+                    .replace("\\\\", "\\")
+                )
+                logger.warning(
+                    "openai_compat: invalid JSON (%d chars) — lenient extraction recovered %d chars",
+                    len(content),
+                    len(extracted),
+                )
+                return TranslateResult(text=extracted, new_terms=[])
             logger.warning(
                 "openai_compat: LLM returned non-JSON content (%d chars); "
                 "falling back to plain-text translation with no new_terms. "

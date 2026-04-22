@@ -1,9 +1,32 @@
 from bookbridge.ingestion.pdf_reader import (
     clean_page_text,
+    detect_running_headers,
     is_noise_line,
     is_noise_page,
     is_running_header,
 )
+
+
+# AC5: detect_running_headers finds repeated header/footer lines
+class TestDetectRunningHeaders:
+    def test_finds_repeated_first_line(self):
+        pages = {i: f"Book Title\nContent of page {i}." for i in range(1, 20)}
+        assert "Book Title" in detect_running_headers(pages)
+
+    def test_ignores_unique_lines(self):
+        pages = {i: f"Unique line {i}\nBody text here." for i in range(1, 20)}
+        headers = detect_running_headers(pages)
+        assert not any("Unique line" in h for h in headers)
+
+    def test_returns_empty_for_too_few_pages(self):
+        pages = {1: "Header\nContent", 2: "Header\nContent", 3: "Header\nContent"}
+        assert detect_running_headers(pages) == set()
+
+    def test_extra_headers_stripped_by_clean_page_text(self):
+        text = "Running Header\nActual content here."
+        cleaned = clean_page_text(text, extra_headers={"Running Header"})
+        assert "Running Header" not in cleaned
+        assert "Actual content here." in cleaned
 
 
 # AC1: is_noise_line detects OCR garbage

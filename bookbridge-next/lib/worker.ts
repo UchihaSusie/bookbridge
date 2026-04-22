@@ -31,7 +31,8 @@ export async function workerFetch(
     })
   } catch (err) {
     const isTimeout = err instanceof Error && err.name === 'TimeoutError'
-    console.error(`[workerFetch] ${isTimeout ? 'timeout' : 'connection error'} — ${path}`)
+    const errorDetail = err instanceof Error ? err.stack || err.message : String(err)
+    console.error(`[workerFetch] ${isTimeout ? 'timeout' : 'connection error'} — ${path}:`, errorDetail)
     throw new Error(isTimeout ? 'Worker timeout' : 'Worker unavailable')
   }
 }

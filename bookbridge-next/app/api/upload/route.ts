@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file') as File | null
   const title = (formData.get('title') as string) || 'Untitled'
   const targetLang = (formData.get('targetLang') as string) || 'zh-Hans'
+  const chapterCountRaw = formData.get('chapterCount') as string | null
+  const chapterCount = chapterCountRaw ? parseInt(chapterCountRaw, 10) : null
 
   if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
     return NextResponse.json(
@@ -62,6 +64,9 @@ export async function POST(req: NextRequest) {
 
   const workerForm = new FormData()
   workerForm.append('file', file)
+  if (chapterCount && chapterCount > 0) {
+    workerForm.append('chapter_count', String(chapterCount))
+  }
 
   let parseData: WorkerParseResponse | null = null
   let workerErrorDetail: string | null = null

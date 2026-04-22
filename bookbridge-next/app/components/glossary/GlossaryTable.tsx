@@ -33,6 +33,7 @@ export default function GlossaryTable({ projectId, initialTerms }: Props) {
   const [newTranslation, setNewTranslation] = useState('')
   const [newCategory, setNewCategory] = useState('general')
   const [isAdding, setIsAdding] = useState(false)
+  const [approvingAll, setApprovingAll] = useState(false)
 
   const visible = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -108,6 +109,31 @@ export default function GlossaryTable({ projectId, initialTerms }: Props) {
     }
   }
 
+  async function approveAll() {
+    const unapproved = terms.filter((t) => !t.approved)
+    if (unapproved.length === 0 || approvingAll) return
+    setApprovingAll(true)
+    const snapshot = terms
+    setTerms((prev) => prev.map((t) => ({ ...t, approved: true })))
+    try {
+      await Promise.all(
+        unapproved.map((t) =>
+          fetch(`/api/projects/${projectId}/glossary/${t.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ approved: true }),
+          })
+        )
+      )
+      setError(null)
+    } catch {
+      setTerms(snapshot)
+      setError('Failed to approve all terms. Please try again.')
+    } finally {
+      setApprovingAll(false)
+    }
+  }
+
   function startEdit(term: GlossaryTerm) {
     setDraftValue(term.translation ?? '')
     setEditingId(term.id)
@@ -146,6 +172,18 @@ export default function GlossaryTable({ projectId, initialTerms }: Props) {
             className="w-full rounded border border-zinc-300 bg-white py-1.5 pl-8 pr-3 text-sm dark:border-zinc-700 dark:bg-zinc-900"
           />
         </div>
+        {terms.some((t) => !t.approved) && (
+          <button
+            type="button"
+            onClick={approveAll}
+            disabled={approvingAll}
+            className="inline-flex items-center gap-1 rounded bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          >
+            {approvingAll
+              ? 'Approving…'
+              : `Approve All (${terms.filter((t) => !t.approved).length})`}
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2 rounded border border-dashed border-zinc-300 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900">

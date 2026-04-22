@@ -213,6 +213,7 @@ export default async function ReaderPage({
   if (project.ownerId !== userId && !project.isPublic) return notFound()
 
   const chapters = project.chapters.map((ch) => ({
+    id: ch.id,
     number: ch.number,
     title: ch.title,
     source: ch.sourceContent || '',
@@ -225,6 +226,7 @@ export default async function ReaderPage({
       sourceLang={project.sourceLang}
       targetLang={project.targetLang}
       chapters={chapters}
+      projectId={project.ownerId === userId ? id : undefined}
     />
   )
 }

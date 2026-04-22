@@ -13,6 +13,7 @@ const bodySchema = z.union([
     job_id: z.string().min(1).max(128),
     status: z.literal('SUCCEEDED'),
     translated_content: z.string().min(1),
+    summary: z.string().optional(),
   }),
   z.object({
     job_id: z.string().min(1).max(128),
@@ -76,7 +77,10 @@ export async function POST(req: NextRequest) {
       if (payload.status === 'SUCCEEDED' && job.chapterId) {
         await tx.chapter.update({
           where: { id: job.chapterId },
-          data: { translation: payload.translated_content },
+          data: {
+            translation: payload.translated_content,
+            ...(payload.summary ? { summary: payload.summary } : {}),
+          },
         })
       }
     })

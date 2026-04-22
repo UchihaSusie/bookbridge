@@ -99,3 +99,68 @@ class TestBuildChunkManifest:
         assert "total_pages" in d
         assert "chunks" in d
         assert isinstance(d["chunks"], list)
+
+    def test_front_matter_chunk_created_when_pre_chapter_pages_exist(self):
+        pages = {1: "Copyright 2024", 2: "Dedication page", 3: "Chapter 1\nContent begins"}
+        manifest = build_chunk_manifest(pages, max_pages_per_chunk=20)
+        assert manifest.chunks[0].title == "Front Matter"
+        assert manifest.chunks[0].end_page == 2
+        assert manifest.chunks[1].start_page == 3
+
+    def test_no_front_matter_when_book_starts_on_chapter_marker(self):
+        pages = {1: "Chapter 1\nContent begins", 2: "More content"}
+        manifest = build_chunk_manifest(pages, max_pages_per_chunk=20)
+        assert manifest.chunks[0].title != "Front Matter"
+        assert len(manifest.chunks) == 1
+
+    def test_chapter_count_splits_evenly(self):
+        pages = {i: f"Page {i}" for i in range(1, 61)}
+        manifest = build_chunk_manifest(pages, chapter_count=3)
+        assert len(manifest.chunks) == 3
+        assert manifest.chunks[0].start_page == 1
+        assert manifest.chunks[2].end_page == 60
+
+    def test_chapter_count_last_chunk_absorbs_remainder(self):
+        pages = {i: f"Page {i}" for i in range(1, 11)}
+        manifest = build_chunk_manifest(pages, chapter_count=3)
+        covered = [p for c in manifest.chunks for p in range(c.start_page, c.end_page + 1)]
+        assert len(covered) == 10
+
+    def test_chapter_count_overrides_auto_detection(self):
+        pages = {1: "PART ONE\nBegins", 2: "Text", 3: "PART TWO\nBegins", 4: "Text"}
+        manifest = build_chunk_manifest(pages, chapter_count=2)
+        assert len(manifest.chunks) == 2
+
+
+class TestExpandedPatterns:
+    def test_detects_roman_numeral_ii(self):
+        pages = {1: "Intro", 2: "II\nContent"}
+        assert 2 in detect_chapter_breaks(pages)
+
+    def test_detects_roman_numeral_x(self):
+        pages = {1: "Text", 2: "X\nContent"}
+        assert 2 in detect_chapter_breaks(pages)
+
+    def test_detects_standalone_arabic_number(self):
+        pages = {1: "Intro", 2: "7\nContent"}
+        assert 2 in detect_chapter_breaks(pages)
+
+    def test_detects_foreword(self):
+        pages = {1: "FOREWORD\nText"}
+        assert 1 in detect_chapter_breaks(pages)
+
+    def test_detects_interlude(self):
+        pages = {1: "INTERLUDE\nText"}
+        assert 1 in detect_chapter_breaks(pages)
+
+    def test_detects_french_chapter(self):
+        pages = {1: "Chapitre 3\nContent"}
+        assert 1 in detect_chapter_breaks(pages)
+
+    def test_detects_short_allcaps_heading(self):
+        pages = {1: "THE DARK FOREST\nContent begins"}
+        assert 1 in detect_chapter_breaks(pages)
+
+    def test_ignores_long_allcaps_sentence(self):
+        pages = {1: "THIS IS A VERY LONG SENTENCE THAT SHOULD NOT BE A CHAPTER HEADING\nContent"}
+        assert 1 not in detect_chapter_breaks(pages)

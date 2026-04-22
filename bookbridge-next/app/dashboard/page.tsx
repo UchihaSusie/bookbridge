@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 
   const projects = await prisma.project.findMany({
     where: { ownerId: userId },
-    include: { chapters: true, jobs: true },
+    include: { chapters: { select: { translation: true } } },
     orderBy: { updatedAt: 'desc' },
   })
 
@@ -58,13 +58,13 @@ export default async function DashboardPage() {
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => {
-            const completedJobs = project.jobs.filter(
-              (j) => j.status === 'COMPLETED'
+            const translatedCount = project.chapters.filter(
+              (c) => c.translation
             ).length
             const totalChapters = project.chapters.length
             const progress =
               totalChapters > 0
-                ? Math.round((completedJobs / totalChapters) * 100)
+                ? Math.round((translatedCount / totalChapters) * 100)
                 : 0
 
             return (

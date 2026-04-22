@@ -6,7 +6,7 @@ import tempfile
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Form, HTTPException, UploadFile
 
 from bookbridge.harness import get_translator
 from bookbridge.harness.translator import (
@@ -72,7 +72,10 @@ def health() -> HealthResponse:
 
 
 @router.post("/parse", response_model=TranslateChunkResponse)
-def parse(file: UploadFile) -> TranslateChunkResponse:
+def parse(
+    file: UploadFile,
+    chapter_count: int | None = Form(default=None),
+) -> TranslateChunkResponse:
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=422, detail="Only PDF files are accepted.")
     if file.content_type not in ("application/pdf", "application/octet-stream"):
@@ -82,13 +85,25 @@ def parse(file: UploadFile) -> TranslateChunkResponse:
     if len(data) > MAX_PDF_BYTES:
         raise HTTPException(status_code=413, detail="PDF exceeds maximum allowed size (50 MB).")
 
+    if chapter_count is not None and chapter_count <= 0:
+        raise HTTPException(status_code=422, detail="chapter_count must be a positive integer.")
+
     tmp_path: Path | None = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             tmp.write(data)
             tmp_path = Path(tmp.name)
         pages = extract_pages(tmp_path)
-        manifest = build_chunk_manifest(pages, source_file=file.filename)
+
+        if chapter_count is not None and chapter_count > len(pages):
+            raise HTTPException(
+                status_code=422,
+                detail=f"chapter_count ({chapter_count}) exceeds total pages ({len(pages)}).",
+            )
+
+        manifest = build_chunk_manifest(
+            pages, source_file=file.filename, chapter_count=chapter_count
+        )
     except HTTPException:
         raise
     except Exception:
@@ -217,6 +232,25 @@ def _translate_with_user_creds(
     try:
         parsed = _json.loads(stripped)
     except _json.JSONDecodeError:
+        import re as _re
+
+        lenient = _re.search(
+            r'"text"\s*:\s*"([\s\S]*?)(?:"\s*,\s*"new_terms"|"\s*\})',
+            stripped,
+        )
+        if lenient:
+            extracted = (
+                lenient.group(1)
+                .replace("\\n", "\n")
+                .replace("\\t", "\t")
+                .replace('\\"', '"')
+                .replace("\\\\", "\\")
+            )
+            logger.warning(
+                "user-creds path: invalid JSON — lenient extraction recovered %d chars",
+                len(extracted),
+            )
+            return TranslateResult(text=extracted, new_terms=[])
         logger.warning("user-creds path: LLM returned non-JSON, using raw text")
         return TranslateResult(text=raw_content, new_terms=[])
 
@@ -339,13 +373,45 @@ def translate_and_callback(
             ],
         )
 
-    post_worker_callback(
-        {
-            "job_id": job_id,
-            "status": "SUCCEEDED",
-            "translated_content": result.text,
-        }
-    )
+    summary_text = None
+    try:
+        from bookbridge.worker_api.llm import chat_completion
+        from bookbridge.worker_api.models import LLMCredentials
+
+        system_prompt = (
+            "Summarize the following text in 100 words or fewer. "
+            "Write a concise, informative summary suitable as a chapter overview. "
+            "Return only the summary text in English."
+        )
+
+        creds = None
+        if llm_creds and llm_creds.get("llm_api_key"):
+            creds = LLMCredentials(**llm_creds)
+
+        content = chat_completion(
+            system_prompt=system_prompt,
+            user_content=source_text[:8000],
+            llm=creds,
+            timeout=60,
+        )
+        summary_text = content.strip()
+    except Exception as exc:
+        logger.warning(
+            "summarize during translation failed for job %s: %s: %s",
+            job_id,
+            type(exc).__name__,
+            exc,
+        )
+
+    payload = {
+        "job_id": job_id,
+        "status": "SUCCEEDED",
+        "translated_content": result.text,
+    }
+    if summary_text:
+        payload["summary"] = summary_text
+
+    post_worker_callback(payload)
 
 
 @router.post("/translate/chunk/async", status_code=202)
