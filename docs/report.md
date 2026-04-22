@@ -155,7 +155,7 @@ Two MCP servers on this project: a custom Python **glossary-server** registered 
 
 A complete Playwright MCP session (AI writes code → AI opens the live browser → AI + human verify the visible result) is archived at [`docs/evidence/mcp-playwright/`](evidence/mcp-playwright/): a session README, 2 page screenshots (Clerk sign-in redirect + final verified layout), 2 Playwright accessibility snapshots (YAML), and 2 browser console logs. The recorded session (≈1 minute, 2026-04-21 UTC) shows Claude moving the green "Start Reading" button into the title block of the project detail page (`bookbridge-next/app/dashboard/projects/[id]/page.tsx:41-67`) and then using the Playwright-controlled browser — signed in through Clerk — to visually confirm the new layout on a live book (14 chapters, en → zh-Hans). The corresponding code + `.mcp.json` change lives in commit `447c2e0` (merged via PR #63).
 
-### 2.5 Sub-agents (5 agents in `.claude/agents/`)
+### 2.5 Sub-agents (4 agents in `.claude/agents/`)
 
 | Agent | Role |
 |---|---|
@@ -163,7 +163,6 @@ A complete Playwright MCP session (AI writes code → AI opens the live browser 
 | `security-reviewer.md` | Reviews code for OWASP Top 10 + BookBridge-specific gates (auth/ownership, Zod validation, SSRF, secret hygiene) |
 | `test-writer.md` | Writes failing Vitest tests for Next.js TDD issues — produces the `test(red):` commit, never writes implementation |
 | `product-architect.md` | Audits PRD ↔ GitHub Issue coverage, generates TDD-structured issues with OWASP gates |
-| `rubric-workflow-architect.md` | Maps rubric criteria to implementation decisions and validates development workflow |
 
 **Usage evidence** (committed screenshots):
 - `code-reviewer` output: `docs/evidence/image-20260418172430290.png`
@@ -422,11 +421,9 @@ What the README provides:
 
 ### 6.2 Blog post
 
-> **🚧 Placeholder — URL to be inserted before final submission.**
->
-> Target: `https://medium.com/@<author>/<slug>` (Medium) or `https://dev.to/<author>/<slug>` (dev.to).
->
-> Planned content: the Claude Code workflow used to ship BookBridge — **custom skills** (`tdd-add-module` v1 → v2 iteration, `/start-issue`, `/create-pr`), **hooks** (`PreToolUse` TDD enforcement, `PostToolUse` ruff format, `Stop` pytest gate), **MCP** (custom glossary server + Playwright MCP for UI verification), and **sub-agents** (`code-reviewer`, `security-reviewer`, `test-writer`). Quantified insight: 15+ TDD red-green pairs in 2 sprints with Vitest 86.9% / pytest 77% coverage, and AI-authored C.L.E.A.R. reviews as the de-facto PR review record.
+Published on Substack: [BookBridge: An AI-Powered Book Translation Platform That Actually Understands Structure](https://attonbitusclamo202566.substack.com/p/bookbridge-an-ai-powered-book-translation?r=5lm4yb&utm_campaign=post&utm_medium=web&triedRedirect=true)
+
+The post covers the Claude Code workflow used to ship BookBridge — **custom skills** (`tdd-add-module` v1 → v2 iteration, `/start-issue`, `/create-pr`), **hooks** (`PreToolUse` TDD enforcement, `PostToolUse` ruff format, `Stop` pytest gate), **MCP** (custom glossary server + Playwright MCP for UI verification), and **sub-agents** (`code-reviewer`, `security-reviewer`, `test-writer`). Quantified insight: 15+ TDD red-green pairs in 2 sprints with Vitest 86.9% / pytest 77% coverage, and AI-authored C.L.E.A.R. reviews as the de-facto PR review record.
 
 ### 6.3 Video demo (5–10 min)
 
