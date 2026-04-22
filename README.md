@@ -33,7 +33,7 @@ graph TD
     Worker["Python FastAPI Worker\n(Railway)"]
     PG["PostgreSQL\n(Neon)"]
     Chroma["ChromaDB\n(local to Worker)"]
-    Claude["Anthropic Claude API"]
+    Claude["LLM API\n(user-provided key)"]
 
     Browser -->|"HTTPS"| Next
     Next -->|"REST"| Worker
@@ -50,7 +50,7 @@ graph TD
 | Database | PostgreSQL (Neon) via Prisma |
 | Translation Worker | Python 3.11 + FastAPI (Railway) |
 | Vector Retrieval | ChromaDB (RAG glossary injection) |
-| LLM | Anthropic Claude API |
+| LLM | User-provided API key (OpenAI / custom) |
 | CI/CD | GitHub Actions |
 | Deployment | Vercel (Next.js) + Railway (Worker) |
 
