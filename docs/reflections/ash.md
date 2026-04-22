@@ -29,4 +29,4 @@ The problem is that a sub-agent reviewer can't tell a rename from a database sch
 
 Partway through the project I found out that Claude Code had moved skills to `.claude/commands/`, which meant I'd been typing `skill run /create-pr` manually instead of just `/create-pr`. Not a disaster, but annoying — and completely avoidable.
 
-Claude Code moves fast. A 15-minute changelog review at the start of each sprint would have saved more time than it cost. That goes on my sprint-zero checklist from now on.
+
