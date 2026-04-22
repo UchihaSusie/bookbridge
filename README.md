@@ -67,7 +67,7 @@ bookbridge/
 │   ├── commands/             # Custom skills: /tdd-add-module, /start-issue, /create-pr
 │   ├── skills/               # v1 baselines kept for git-history evidence
 │   ├── settings.json         # Hooks: PreToolUse TDD gate, PostToolUse ruff, Stop pytest
-│   └── agents/               # Sub-agents: code-reviewer, security-reviewer, test-writer, product-architect, rubric-workflow-architect
+│   └── agents/               # Sub-agents: code-reviewer, security-reviewer, test-writer, product-architect
 ├── .github/
 │   ├── workflows/            # ci.yml (lint/typecheck/tests/E2E/AI-review) · security.yml (Gitleaks/Bandit/Semgrep/npm audit)
 │   ├── ISSUE_TEMPLATE/       # feature.md with Security Definition of Done checklist

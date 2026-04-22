@@ -75,7 +75,7 @@
 
 | 状态 | 要求 | Rubric 依据 | 推荐时机 |
 |---|---|---|---|
-| ✅ | Sub-agents 在 `.claude/agents/`（`security-reviewer` + `code-reviewer` + `rubric-workflow-architect` + `product-architect` + `test-writer`） | Agents: "Custom sub-agents in `.claude/agents/`" | 2026-04-17 完成（5 agents） |
+| ✅ | Sub-agents 在 `.claude/agents/`（`security-reviewer` + `code-reviewer` + `product-architect` + `test-writer`） | Agents: "Custom sub-agents in `.claude/agents/`" | 2026-04-17 完成（4 agents） |
 | ⬜ | 有使用证据（session log / PR / 截图显示 agent 输出） | Agents: "Evidence of use (session log, PR, or screenshots showing agent output)" | 持续收集 |
 
 > `security-reviewer` 同时满足「Agents」和「Security Gate 3 SAST」两条要求。`code-reviewer` 提供 C.L.E.A.R. 结构化 review，开发过程中手动调用（`/code-reviewer`），PR 提交后 CI 自动运行 security review 并以 PR comment 形式留证。`test-writer` 在 `/start-issue` Step 7 中自动调用，写入失败测试并提交 `test(red):`，确保 TDD git 历史证据。
