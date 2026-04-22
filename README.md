@@ -12,6 +12,15 @@
 ## For graders — start here
 
 **👉 [`docs/report.md`](docs/report.md)** — the full submission report. Covers all six rubric categories (Application Quality · Claude Code Mastery · Testing & TDD · CI/CD & Production · Team Process · Documentation & Demo) with inline links to every evidence artefact.
+### Blog post
+Published on Substack: BookBridge: An AI-Powered Book Translation Platform That Actually Understands Structure
+
+### Video demo (5–10 min)
+https://youtu.be/Dwah3sysQh4
+
+### Individual reflections (500 words per partner)
+docs/reflections/ash.md — 500 words (Ash / Zhanyi Chen)
+docs/reflections/shuai-ren.md — 500 words (Shuai Ren)
 
 Evidence bundles referenced from the report:
 
